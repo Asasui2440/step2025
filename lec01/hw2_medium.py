@@ -41,7 +41,7 @@ with open('words.txt') as dictionary:
     for word in dictionary:
         word = word.strip()
         vec = to_vector(word) 
-        dict_vec.append(word,vec)   # dict_vecに単語とベクトルを持たせる
+        dict_vec.append((word,vec))   # dict_vecに単語とベクトルを持たせる
 
 dict_vec.sort(key=lambda x: -score(x[0]))  #スコアが大きい順にソートする
 
