@@ -1,14 +1,13 @@
 
-# 与えられた文字列のアナグラムを列挙する
+# 問題：与えられた文字列のアナグラムを列挙する
 
 # words.txtの辞書の単語をソートする。
-
 sort_words_dict = []  # ここにソートした単語と、元の単語を追加していく
 with open('words.txt') as dictionary:
     for word in dictionary:
         word = word.strip()
         sorted_word = ''.join(sorted(word))
-        sort_words_dict.append((sorted_word,word))
+        sort_words_dict.append((sorted_word,word)) # ソートした単語と、そのままの単語を持たせる
 
 sort_words_dict.sort()  # これを、ソートした単語のアルファベット順にまたソートする
 
@@ -23,7 +22,7 @@ def anagram_algo(word,sort_words_dict):
     index = -1
     while(left < right):
             middle = (left+right)//2
-            if word < sort_words_dict[middle][0]:  # 
+            if word < sort_words_dict[middle][0]:  
                 right = middle
             elif word > sort_words_dict[middle][0]:
                 left = middle + 1

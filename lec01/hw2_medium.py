@@ -15,25 +15,24 @@ import sys
 SCORES = [1, 3, 2, 2, 1, 3, 3, 1, 1, 4, 4, 2, 2, 1, 1, 3, 4, 1, 1, 1, 2, 3, 3, 4, 3, 4]
 
 
+# スコアの計算
 def score(word):
     score = 0
     for c in word:
-        if 'a' <= c <= 'z':
-            score += SCORES[ord(c) - ord('a')]
-
+        score += SCORES[ord(c) - ord('a')]
     return score
 
+# 26個の要素を持つ配列(ベクトル)を用意
 def to_vector(word):
     vec = [0]*26
     for c in word:
-        if 'a' <= c <= 'z':
-            vec[ord(c) - ord('a')] += 1
-    return tuple(vec)
+       vec[ord(c) - ord('a')] += 1
+    return tuple(vec)  # リストよりもtuple(組み合わせ)の方がメモリ使用量が少ないので、tupleにして返す
 
 
-
+# 引数の確認
 if len(sys.argv) < 2:
-    print("Usage: python hw2.py large.txt")
+    print("Usage: python hw2_medium.py medium.txt")
     sys.exit(1)
 
 
@@ -41,29 +40,30 @@ with open('words.txt') as dictionary:
     dict_vec = []
     for word in dictionary:
         word = word.strip()
-        vec = to_vector(word)
-        dict_vec.append((word,vec))
+        vec = to_vector(word) 
+        dict_vec.append(word,vec)   # dict_vecに単語とベクトルを持たせる
 
-dict_vec.sort(key=lambda x: -score(x[0]))
+dict_vec.sort(key=lambda x: -score(x[0]))  #スコアが大きい順にソートする
 
-input_file = sys.argv[1]
+
+input_file = sys.argv[1] 
 with open(input_file,'r') as f:
-    anagram_word_list = []
+    anagram_word_list = [] # ここにanagramを保存していく
     for word in f:
         word = word.strip()
         vec = to_vector(word)
         max_score = 0
         for word_dict,dict_word_vec in dict_vec:
-            if all(vec[i] >= dict_word_vec[i] for i in range(26)):
+            if all(vec[i] >= dict_word_vec[i] for i in range(26)): #辞書の単語の方が、アルファベットの出現回数が少ない時ok
                     max_score = score(word_dict)
                     max_word = word_dict
-                    anagram_word_list.append(max_word)
+                    anagram_word_list.append(max_word) # スコア順にソートしているので最初にokだった単語をそのまま追加
                     break
            
   
              
 with open('medium_answer.txt','w') as o:
-    for row in anagram_word_list:
+    for row in anagram_word_list: # anagram_word_listにある単語を書き込む
         o.write(row + '\n')
 
         
