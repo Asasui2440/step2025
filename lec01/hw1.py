@@ -1,69 +1,65 @@
-
 # 問題：与えられた文字列のアナグラムを列挙する
 
 # words.txtの辞書の単語をソートする。
 sort_words_dict = []  # ここにソートした単語と、元の単語を追加していく
-with open('words.txt') as dictionary:
+with open("words.txt") as dictionary:
     for word in dictionary:
         word = word.strip()
-        sorted_word = ''.join(sorted(word))
-        sort_words_dict.append((sorted_word,word)) # ソートした単語と、そのままの単語を持たせる
+        sorted_word = "".join(sorted(word))
+        sort_words_dict.append(
+            (sorted_word, word)
+        )  # ソートした単語と、そのままの単語を持たせる
 
 sort_words_dict.sort()  # これを、ソートした単語のアルファベット順にまたソートする
 
 
-def anagram_algo(word,sort_words_dict): 
-    word = ''.join(sorted(word))  # 入力された単語をソートする
-    anagram_words = [] # アナグラムを保持するリスト
-   
-    # ２部探索
+def anagram_algo(word: str, sort_words_dict: list) -> list:
+    sorted_given_word = "".join(sorted(word))  # 入力された単語をソートする
+    anagram_words = []  # アナグラムを保持するリスト
+
+    """
+    ２部探索
+    sort_words_dict[left][0] < sorted(given_word) <= sort_words_dict[right][0] を保ちながら right - left を小さくしていく
+    最終的に、sort_words_dict[left][0] < sorted(given_word) <= sort_words_dict[left + 1][0]になる。
+    right = left+1が、該当する区間の開始地点になる。
+    """
     left = 0
-    right = len(sort_words_dict)
-    index = -1
-    while(left < right):
-            middle = (left+right)//2
-            if word < sort_words_dict[middle][0]:  
-                right = middle
-            elif word > sort_words_dict[middle][0]:
-                left = middle + 1
-            else: 
-                 index = middle  # アナグラムが見つかったらループを抜ける
-                 break
+    right = len(sort_words_dict) - 1
 
-    if index != -1:
-         for i in range (len(sort_words_dict)):  # ここでもう一度辞書のループを回す(非効率かも)
-              # 見つかったアナグラムとソートした単語が等しい時、リストにその単語を追加していく
-              if(sort_words_dict[i][0] == sort_words_dict[index][0]): 
-                   anagram_words.append(sort_words_dict[i][1])
-       
-    return anagram_words   # アナグラムを保持したリストを返す
-    
-    
-input_word = input('Input a word\n') # 1つの単語の入力を指示
+    # 指定されたものが範囲外になった場合
+    if (
+        sort_words_dict[right][0] < sorted_given_word
+        or sort_words_dict[left][0] > sorted_given_word
+    ):
+        return []
 
-anagram_words = anagram_algo(input_word,sort_words_dict)
-if len(anagram_words)>0:
-   print("anagrams: ")
-   for anagram_word in anagram_words:
+    while right != left + 1:
+        middle = (left + right) // 2
+        if sorted_given_word <= sort_words_dict[middle][0]:
+            right = middle
+        elif sorted_given_word > sort_words_dict[middle][0]:
+            left = middle
+
+        if sort_words_dict[0][0] == sorted_given_word:
+            index = 0
+        else:
+            index = right
+    # 開始地点のindexから、ソートした単語が一致しているところまでindexを増やしていく
+    while (
+        index < len(sort_words_dict) and sort_words_dict[index][0] == sorted_given_word
+    ):
+        anagram_words.append(sort_words_dict[index][1])
+        index += 1  # 次の単語を確認
+
+    return anagram_words  # アナグラムを保持したリストを返す
+
+
+input_word = input("Input a word\n")  # 1つの単語の入力を指示
+
+anagram_words = anagram_algo(input_word, sort_words_dict)
+if len(anagram_words) > 0:
+    print("anagrams: ")
+    for anagram_word in anagram_words:
         print(anagram_word)
 else:
-     print("No anagrams")  # アナグラムが1つもない
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-
-
-
-
+    print("No anagrams")  # アナグラムが1つもない
