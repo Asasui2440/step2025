@@ -26,7 +26,7 @@ def anagram_algo(word: str, sort_words_dict: list) -> list:
     left = 0
     right = len(sort_words_dict) - 1
 
-    # 指定されたものが範囲外になった場合
+    # 指定されたものが範囲外にあった場合空のリストを返す
     if (
         sort_words_dict[right][0] < sorted_given_word
         or sort_words_dict[left][0] > sorted_given_word
@@ -37,9 +37,10 @@ def anagram_algo(word: str, sort_words_dict: list) -> list:
         middle = (left + right) // 2
         if sorted_given_word <= sort_words_dict[middle][0]:
             right = middle
-        elif sorted_given_word > sort_words_dict[middle][0]:
+        else:
             left = middle
 
+        # indexが0の場合も含まれるとき、indexを0にセット(ここでは'a'が0番目の単語)
         if sort_words_dict[0][0] == sorted_given_word:
             index = 0
         else:
