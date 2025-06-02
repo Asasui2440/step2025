@@ -12,3 +12,6 @@ This repository contains exercises for STEP2025.
 - `score_checker.py`: Script to verify the correctness of the results
 
 
+### 📁 lec02: Hash Table
+1. `hw1_hash_table.py`: Implements a hash table with the delete function, dynamic resizing of the table, and an improved hash calculation method.
+2. `hw4_cache.py` : Implements a fixed-size cache that stores recently accessed web pages using a linked list.
