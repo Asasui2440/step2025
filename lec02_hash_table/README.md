@@ -9,7 +9,7 @@
 ・hashを計算する方法を変更する<br>
 
 ### delete(self: HashTable, key: str, value: any) -> bool
-
+**連結リスト**  
 該当するitemが見つかったら削除してTrue、見つからなければFalseを返す
 
 ・消したいキーのハッシュ値を求める  
