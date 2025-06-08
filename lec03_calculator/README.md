@@ -1,4 +1,4 @@
-# 第3回 Calculator  
+# 第3回 Calculator  (モジュール化)
 
 ### **概要**
 
