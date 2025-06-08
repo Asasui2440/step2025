@@ -15,3 +15,11 @@ This repository contains exercises for STEP2025.
 ### 📁 lec02: Hash Table
 1. `hw1_hash_table.py`: Implements a hash table with the delete function, dynamic resizing of the table, and an improved hash calculation method.
 2. `hw4_cache.py` : Implements a fixed-size cache that stores recently accessed web pages using a linked list.
+
+### 📁 lec03: Calclator  
+`calculator.py` : a simple calculator that evaluates mathematical expressions provided as strings.  
+It supports:  
+- Basic arithmetic operations: +, -, *, /  
+- Parentheses for order of operations  
+- Built-in functions: abs(), int(), round()  
+- Invalid or unsafe expressions are rejected for security.  
