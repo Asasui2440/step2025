@@ -2,7 +2,7 @@
 
 # Recognize numbers and store them in tokens.
 # Also recognize decimal points to enable calculations with decimals.
-def read_number(line, index):
+def read_number(line: str, index: int) -> {tuple, int}:
     number = 0
     while index < len(line) and line[index].isdigit():
         number = number * 10 + int(line[index])
@@ -22,61 +22,61 @@ def read_number(line, index):
 
 
 # Store the "+" token and increment the index by 1
-def read_plus(index):
+def read_plus(index: int) -> {tuple, int}:
     token = {"type": "PLUS"}
     return token, index + 1
 
 
 # Store the "-" token and increment the index by 1
-def read_minus(index):
+def read_minus(index: int) -> {tuple, int}:
     token = {"type": "MINUS"}
     return token, index + 1
 
 
 # Store the "*" token and increment the index by 1
-def read_times(index):
+def read_times(index: int) -> {tuple, int}:
     token = {"type": "TIMES"}
     return token, index + 1
 
 
 # Store the "/" token and increment the index by 1
-def read_divide(index):
+def read_divide(index: int) -> {tuple, int}:
     token = {"type": "DIVIDE"}
     return token, index + 1
 
 
 # Store the "(" token and increment the index by 1
-def read_kakko_left(index):
+def read_kakko_left(index: int) -> {tuple, int}:
     token = {"type": "KAKKO_LEFT"}
     return token, index + 1
 
 
 # Store the ")" token and increment the index by 1
-def read_kakko_right(index):
+def read_kakko_right(index: int) -> {tuple, int}:
     token = {"type": "KAKKO_RIGHT"}
     return token, index + 1
 
 
 # Store the "abs" token and increment the index by 3 (length of "abs")
-def read_abs(index):
+def read_abs(index: int) -> {tuple, int}:
     token = {"type": "ABS"}
     return token, index + 3
 
 
 # Store the "round" token and increment the index by 5 (length of "round")
-def read_round(index):
+def read_round(index: int) -> {tuple, int}:
     token = {"type": "ROUND"}
     return token, index + 5
 
 
 # Store the "int" token and increment the index by 3 (length of "int")
-def read_int(index):
+def read_int(index: int) -> {tuple, int}:
     token = {"type": "INT"}
     return token, index + 3
 
 
 # Create a list of tokens
-def tokenize(line):
+def tokenize(line: str) -> list:
     tokens = []
     index = 0
     while index < len(line):
@@ -118,7 +118,7 @@ def tokenize(line):
 # Perform similar processing for int and round.
 
 
-def evaluate_options(tokens):
+def evaluate_options(tokens: list) -> list:
     index = 0
     while index < len(tokens):
         if tokens[index]["type"] == "ABS":
@@ -167,7 +167,7 @@ def evaluate_options(tokens):
 # Calculate the part enclosed by parentheses by calling the evaluate function.
 # Insert the calculation result into tokens.
 # Continue processing until all parentheses are removed.
-def evaluate_kakko(tokens):
+def evaluate_kakko(tokens: list) -> list:
     index = 0
     while index < len(tokens):
         if tokens[index]["type"] == "KAKKO_RIGHT":
@@ -196,7 +196,7 @@ def evaluate_kakko(tokens):
 # Insert the calculation result into the token list and decrement the index by 2 for the reduced tokens.
 # Perform similar processing for division.
 # If the token at the index is neither a number, PLUS, nor MINUS, handle it as invalid input and raise an error.
-def evaluate_times_divide(tokens):
+def evaluate_times_divide(tokens: list) -> list:
     index = 1
     while index < len(tokens):
         if tokens[index]["type"] == "NUMBER":
@@ -241,7 +241,7 @@ def evaluate_times_divide(tokens):
 # Finally, calculate the remaining plus and minus operations.
 
 
-def evaluate(tokens):
+def evaluate(tokens: list) -> float:
     tokens = evaluate_kakko(tokens)
     tokens = evaluate_options(tokens)
     tokens = evaluate_times_divide(tokens)
@@ -264,7 +264,7 @@ def evaluate(tokens):
 
 # Test
 # Compare the actual calculation result with the value from eval, and print PASS if correct.
-def test(line):
+def test(line: str) -> str:
     tokens = tokenize(line)
     actual_answer = evaluate(tokens)
     expected_answer = eval(line)
