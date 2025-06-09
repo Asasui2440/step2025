@@ -2,7 +2,7 @@
 
 # Recognize numbers and store them in tokens.
 # Also recognize decimal points to enable calculations with decimals.
-def read_number(line: str, index: int) -> {tuple, int}:
+def read_number(line: str, index: int) -> {dict, int}:
     number = 0
     while index < len(line) and line[index].isdigit():
         number = number * 10 + int(line[index])
@@ -22,55 +22,55 @@ def read_number(line: str, index: int) -> {tuple, int}:
 
 
 # Store the "+" token and increment the index by 1
-def read_plus(index: int) -> {tuple, int}:
+def read_plus(index: int) -> {dict, int}:
     token = {"type": "PLUS"}
     return token, index + 1
 
 
 # Store the "-" token and increment the index by 1
-def read_minus(index: int) -> {tuple, int}:
+def read_minus(index: int) -> {dict, int}:
     token = {"type": "MINUS"}
     return token, index + 1
 
 
 # Store the "*" token and increment the index by 1
-def read_times(index: int) -> {tuple, int}:
+def read_times(index: int) -> {dict, int}:
     token = {"type": "TIMES"}
     return token, index + 1
 
 
 # Store the "/" token and increment the index by 1
-def read_divide(index: int) -> {tuple, int}:
+def read_divide(index: int) -> {dict, int}:
     token = {"type": "DIVIDE"}
     return token, index + 1
 
 
 # Store the "(" token and increment the index by 1
-def read_kakko_left(index: int) -> {tuple, int}:
+def read_kakko_left(index: int) -> {dict, int}:
     token = {"type": "KAKKO_LEFT"}
     return token, index + 1
 
 
 # Store the ")" token and increment the index by 1
-def read_kakko_right(index: int) -> {tuple, int}:
+def read_kakko_right(index: int) -> {dict, int}:
     token = {"type": "KAKKO_RIGHT"}
     return token, index + 1
 
 
 # Store the "abs" token and increment the index by 3 (length of "abs")
-def read_abs(index: int) -> {tuple, int}:
+def read_abs(index: int) -> {dict, int}:
     token = {"type": "ABS"}
     return token, index + 3
 
 
 # Store the "round" token and increment the index by 5 (length of "round")
-def read_round(index: int) -> {tuple, int}:
+def read_round(index: int) -> {dict, int}:
     token = {"type": "ROUND"}
     return token, index + 5
 
 
 # Store the "int" token and increment the index by 3 (length of "int")
-def read_int(index: int) -> {tuple, int}:
+def read_int(index: int) -> {dict, int}:
     token = {"type": "INT"}
     return token, index + 3
 
