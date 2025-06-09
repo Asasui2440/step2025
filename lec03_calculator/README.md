@@ -39,7 +39,7 @@ abs、round、int 関数を評価し、結果をtokenのリストに反映
 `read_abs(), read_round(), read_int()`: **関数名**  
 
 
-### **関数: tokenize(line)**
+### **関数: tokenize(line:str)->list**
 
 - 入力された数式を読み取り、tokenのリストを生成する
 
@@ -62,7 +62,7 @@ abs、round、int 関数を評価し、結果をtokenのリストに反映
 
 ### **2. 関数の評価**
 
-### **関数: evaluate_options(tokens)**
+### **関数: evaluate_options(tokens:list)->list**
 
 - abs、round、int 関数を評価
 - 関数の後に続く数字を計算し、その結果をtokenのリストに反映する
@@ -71,7 +71,7 @@ abs、round、int 関数を評価し、結果をtokenのリストに反映
 
 ### **3. 括弧の評価**
 
-### **関数: evaluate_kakko(tokens)**
+### **関数: evaluate_kakko(tokens:list)->list**
 
 - 括弧内の式を優先的に計算
 - 括弧の右側 (`KAKKO_RIGHT`) を見つけたら、対応する左括弧 (`KAKKO_LEFT`) を探し、その間の式を計算する
@@ -80,12 +80,12 @@ abs、round、int 関数を評価し、結果をtokenのリストに反映
 
 ### **4. 演算の評価**
 
-### **関数: evaluate_times_divide(tokens)**
+### **関数: evaluate_times_divide(tokens:list)->list**
 
 - 掛け算 () と割り算 (`/`) を優先的に計算
 - 数字と演算子を組み合わせて計算し、結果をtokenのリストに反映します。
 
-### **関数: evaluate(tokens)**
+### **関数: evaluate(tokens:list)->float**
 
 - 括弧、関数、掛け算・割り算を評価した後、足し算 (`+`) と引き算 () を計算
 
@@ -93,7 +93,7 @@ abs、round、int 関数を評価し、結果をtokenのリストに反映
 
 ### **5. テスト機能**
 
-### **関数: test(line)**
+### **関数: test(line:str)->str**
 
 - 数式を入力し、プログラムの計算結果と Python の eval 関数の結果を比較する
 - 結果が一致すれば `PASS`、一致しなければ `FAIL` を表示
