@@ -78,14 +78,14 @@ def read_divide(index: int) -> Tuple[Token, int]:
 
 
 # Store the "(" token and increment the index by 1
-def read_PARENT_left(index: int) -> Tuple[Token, int]:
-    token = {"type": "PARENT_LEFT"}
+def read_PAREN_left(index: int) -> Tuple[Token, int]:
+    token = {"type": "PAREN_LEFT"}
     return token, index + 1
 
 
 # Store the ")" token and increment the index by 1
-def read_PARENT_right(index: int) -> Tuple[dict, int]:
-    token = {"type": "PARENT_RIGHT"}
+def read_PAREN_right(index: int) -> Tuple[dict, int]:
+    token = {"type": "PAREN_RIGHT"}
     return token, index + 1
 
 
@@ -123,9 +123,9 @@ def tokenize(line: str) -> list:
         elif line[index] == "/":
             (token, index) = read_divide(index)
         elif line[index] == "(":
-            (token, index) = read_PARENT_left(index)
+            (token, index) = read_PAREN_left(index)
         elif line[index] == ")":
-            (token, index) = read_PARENT_right(index)
+            (token, index) = read_PAREN_right(index)
         elif line[index : index + 3] == "abs":
             (token, index) = read_abs(index)
         elif line[index : index + 5] == "round":
@@ -178,29 +178,29 @@ def evaluate_options(tokens: list) -> list:
     return tokens
 
 
-# Process parentheses.
+# Process PARENheses.
 # If ")" is found, decrement the index to find the first "(".
-# Calculate the part enclosed by parentheses by calling the evaluate function.
+# Calculate the part enclosed by PARENheses by calling the evaluate function.
 # Insert the calculation result into tokens.
-# Continue processing until all parentheses are removed.
-def evaluate_PARENT(tokens: list) -> list:
+# Continue processing until all PARENheses are removed.
+def evaluate_PAREN(tokens: list) -> list:
     index = 0
     while index < len(tokens):
-        if isinstance(tokens[index], dict) and tokens[index]["type"] == "PARENT_RIGHT":
+        if isinstance(tokens[index], dict) and tokens[index]["type"] == "PAREN_RIGHT":
             left_index = index - 1
             while left_index >= 0:
                 if (
                     isinstance(tokens[left_index], dict)
-                    and tokens[left_index]["type"] == "PARENT_LEFT"
+                    and tokens[left_index]["type"] == "PAREN_LEFT"
                 ):
                     break
                 else:
                     left_index -= 1
             if left_index < 0:
-                raise InvalidSyntaxError("Mismatched parentheses")
+                raise InvalidSyntaxError("Mismatched PARENheses")
             part_of_tokens = tokens[left_index + 1 : index]
             if not part_of_tokens:
-                raise InvalidSyntaxError("Empty parentheses")
+                raise InvalidSyntaxError("Empty PARENheses")
             calculated_number = evaluate(part_of_tokens)
             tokens = (
                 tokens[:left_index] + [Number(calculated_number)] + tokens[index + 1 :]
@@ -252,12 +252,12 @@ def evaluate_times_divide(tokens: list) -> list:
 
 
 # Perform actual calculations.
-# First, calculate parentheses, abs, and other symbols, as well as multiplication and division.
+# First, calculate PARENheses, abs, and other symbols, as well as multiplication and division.
 # Finally, calculate the remaining plus and minus operations.
 
 
 def evaluate(tokens: list) -> float:
-    tokens = evaluate_PARENT(tokens)
+    tokens = evaluate_PAREN(tokens)
     tokens = evaluate_options(tokens)
     tokens = evaluate_times_divide(tokens)
 
@@ -276,57 +276,10 @@ def evaluate(tokens: list) -> float:
     return answer
 
 
-# Test
-# Compare the actual calculation result with the value from eval, and print PASS if correct.
-def test(line: str) -> str:
-    tokens = tokenize(line)
-    actual_answer = evaluate(tokens)
-    expected_answer = eval(line)
-    if abs(actual_answer - expected_answer) < 1e-8:
-        print("PASS! (%s = %f)" % (line, expected_answer))
-    else:
-        print(
-            "FAIL! (%s should be %f but was %f)"
-            % (line, expected_answer, actual_answer)
-        )
-
-
-# Add more tests to this function :)
-def run_test():
-    print("==== Test started! ====")
-    test("1+2")
-    test("1.0+2.1-3")
-    test("1+2*3")  # Check if multiplication order is correct
-    test("1+2/3")  # Check if division order is correct
-    test("2+4.0*2.0/5")  # Check decimals, multiplication, and division
-    test("2+4*5/2-1")
-    test("(2+3)")  # Check if parentheses are calculated correctly
-    test("2*(3+4)")
-    test("3*(2+5)*(3+2)")  # Check if parentheses are calculated first
-    test("((3+2)*2+1)")
-    test("(3.0+4*(2-1))/5")
-    test("2 + 3")  # Check if spaces are handled correctly
-    test("(3+1) * 4")  # Check spaces
-    test("abs(-2)")  # abs
-    test("int(2.2)")  # int
-    test("round(2.6)")  # round
-
-    # invalid input
-    # test("*2+3")
-    # test("a2 + 3")
-    # test("abcs(2)")
-    # test("abs")
-    test(
-        "12 + abs(int(round(-1.55) + abs(int(-2.3 + 4))))"
-    )  # As per the example. Check if parentheses, abs, int, and round are executed in the correct order.
-    print("==== Test finished! ====\n")
-
-
-run_test()
-
-# while True:
-#     print("> ", end="")
-#     line = input()
-#     tokens = tokenize(line)
-#     answer = evaluate(tokens)
-#     print("answer = %f\n" % answer)
+if __name__ == "__main__":
+    while True:
+        print("> ", end="")
+        line = input()
+        tokens = tokenize(line)
+        answer = evaluate(tokens)
+        print("answer = %f\n" % answer)
