@@ -178,11 +178,11 @@ def evaluate_options(tokens: list) -> list:
     return tokens
 
 
-# Process PARENheses.
+# Process Parentheses.
 # If ")" is found, decrement the index to find the first "(".
-# Calculate the part enclosed by PARENheses by calling the evaluate function.
+# Calculate the part enclosed by Parentheses by calling the evaluate function.
 # Insert the calculation result into tokens.
-# Continue processing until all PARENheses are removed.
+# Continue processing until all Parentheses are removed.
 def evaluate_PAREN(tokens: list) -> list:
     index = 0
     while index < len(tokens):
@@ -197,10 +197,10 @@ def evaluate_PAREN(tokens: list) -> list:
                 else:
                     left_index -= 1
             if left_index < 0:
-                raise InvalidSyntaxError("Mismatched PARENheses")
+                raise InvalidSyntaxError("Mismatched Parentheses")
             part_of_tokens = tokens[left_index + 1 : index]
             if not part_of_tokens:
-                raise InvalidSyntaxError("Empty PARENheses")
+                raise InvalidSyntaxError("Empty Parentheses")
             calculated_number = evaluate(part_of_tokens)
             tokens = (
                 tokens[:left_index] + [Number(calculated_number)] + tokens[index + 1 :]
@@ -247,12 +247,12 @@ def evaluate_times_divide(tokens: list) -> list:
                 raise InvalidSyntaxError("Invalid syntax for TIMES_DIVIDES calculation")
         index += 1
     if (Operand.TIMES in tokens) or (Operand.DIVIEDES in tokens):
-        raise InvalidSyntaxError("Invalid syntax for the removal sign")
+        raise InvalidSyntaxError("Invalid syntax for the unnecessary sign")
     return tokens
 
 
 # Perform actual calculations.
-# First, calculate PARENheses, abs, and other symbols, as well as multiplication and division.
+# First, calculate PARENtheses, abs, and other symbols, as well as multiplication and division.
 # Finally, calculate the remaining plus and minus operations.
 
 
