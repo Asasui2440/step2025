@@ -1,165 +1,82 @@
-# 第3回 Calculator  (モジュール化)
+# **第3回 Calculator (モジュール化)**
 
-### **概要**
+### 概要
 
-四則演算や括弧、さらに abs、round、int 関数を含む数式を解析し、計算を行う電卓プログラム
-入力された数式をtoken化し、適切な順序で評価することで結果を計算する
+標準入力から四則演算の文字列を受け取ったら、計算して結果を返すプログラム。
 
+括弧を含む計算、abs,round,int関数に対応している。
 
-## **機能一覧**
+実行コマンド
 
-1. **token化**  
-数式を読み取り、数字や演算子、括弧、関数をtokenとして分割する
-      
-3. **関数の評価**  
-abs、round、int 関数を評価し、結果をtokenのリストに反映
-      
-4. **括弧の評価**  
-括弧内の式を優先的に計算
-      
-5. **演算の評価**  
-掛け算 (*) と割り算 (`/`) を優先的に計算し、その後足し算 (`+`) と引き算 (-) を計算
-      
-6. **テスト機能**  
-事前に定義された数式をテストし、正しい結果が得られるか確認
-      
-7. **対話型電卓**  
-ユーザーが数式を入力すると、その結果を計算して表示する
-
-
-
-## **コードの構造**
-
-### **1. Token化**
-
-### 演算子読み取り関数  
-- tokenとindexを返す  
-`read_plus(), read_minus(), read_times(), read_divide()`: **基本演算子**   
-`read_kakko_left(), read_kakko_right()`: **括弧**  
-`read_abs(), read_round(), read_int()`: **関数名**  
-
-
-### **関数: tokenize(line:str)->list**
-
-- 入力された数式を読み取り、tokenのリストを生成する
-
-
-- tokenには以下の種類があります：
-
-  
-    - **数字 (`NUMBER`)**:    `{"type": "NUMBER", "number": number}`
-    - **足し算 (`PLUS`)**:     `{"type": "PLUS"}`
-    - **引き算 (`MINUS`)**     `{"type": "MINUS"}`
-    - **掛け算 (`TIMES`)**     ` {"type": "TIMES"}`
-    - **割り算 (`DIVIDE`)**     `{"type": "DIVIDE"}`
-    - **左括弧 (`KAKKO_LEFT`)**    `{"type": "KAKKO_LEFT"}`
-    - **右括弧 (`KAKKO_RIGHT`)**    `{"type": "KAKKO_RIGHT"}`
-    - **関数 (`ABS`, `ROUND`, `INT`)**    `{"type": "ABS"}`,`{"type": "ROUND"}`,`{"type": "INT"}`
- 
-  
-
----
-
-### **2. 関数の評価**
-
-### **関数: evaluate_options(tokens:list)->list**
-
-- abs、round、int 関数を評価
-- 関数の後に続く数字を計算し、その結果をtokenのリストに反映する
-
----
-
-### **3. 括弧の評価**
-
-### **関数: evaluate_kakko(tokens:list)->list**
-
-- 括弧内の式を優先的に計算
-- 括弧の右側 (`KAKKO_RIGHT`) を見つけたら、対応する左括弧 (`KAKKO_LEFT`) を探し、その間の式を計算する
-
----
-
-### **4. 演算の評価**
-
-### **関数: evaluate_times_divide(tokens:list)->list**
-
-- 掛け算 () と割り算 (`/`) を優先的に計算
-- 数字と演算子を組み合わせて計算し、結果をtokenのリストに反映します。
-
-### **関数: evaluate(tokens:list)->float**
-
-- 括弧、関数、掛け算・割り算を評価した後、足し算 (`+`) と引き算 () を計算
-
----
-
-### **5. テスト機能**
-
-### **関数: test(line:str)->str**
-
-- 数式を入力し、プログラムの計算結果と Python の eval 関数の結果を比較する
-- 結果が一致すれば `PASS`、一致しなければ `FAIL` を表示
-
-### **関数: run_test()**
-
-- 複数のテストケースを実行し、プログラムの動作を確認
-
----
-
-### **6. 対話型電卓**
-
-### **対話型処理**
-
-- ユーザーが数式を入力すると、token化・評価を行い、結果を表示します。
-
----
-
-## **使用例**
-
-### **テストの実行**
-
-`python calculator.py`
-
-出力例：
-```
-==== Test started! ====
-
-PASS! (1+2 = 3.000000)
-
-PASS! (1.0+(2.1-3 )= 0.100000)
-
-PASS! (1+2*3 = 7.000000)
-
-PASS! (1+2/3 = 1.666667)
-
-PASS! (abs(-2) = 2.000000)
-
-PASS! (round(2.6) = 3.000000)
-
-PASS! (int(2.2) = 2.000000)
-
-==== Test finished! ====
+```python
+python calculator.py
 ```
 
-### **対話型電卓の使用**
+入力例
+
+```python
+> 1+2*3
+answer = 7.000000
+
+> abs(-5) + round(2.7)
+answer = 8.000000
 ```
-> 1+2*3
 
-answer = 7.000000
+不正な入力はエラーを返す
 
-> abs(-5) + round(2.7)
+```python
+> 2*
+InvalidSyntaxError: Invalid syntax for the removal sign
 
-answer = 8.000000
+> absc(2)
+InvalidSyntaxError: Invalid character found: a
+
+>(2+3))
+InvalidSyntaxError: Mismatched parentheses
 ```
----
 
-## **注意事項**
 
-1. **無効な入力**
-    - 無効な文字や構文が含まれる場合、エラーメッセージを表示して終了する
-2. **計算精度**
-    - 小数点以下の計算精度は `1e-8` で比較
-3. **括弧のネスト**
-    - ネストされた括弧も正しく処理できる。
+++2 - 3 など、先頭に+や-が続いてしまうものには対応できませんでした。
 
----
+### テストの実行
 
-##
+```python
+python -m unittest test_calculator.py
+```
+
+(++2 の時にうまくエラー処理ができていません)
+
+```python
+FAIL: test_invalid_syntax (test_calculator.TestCalculator.test_invalid_syntax) (case='++2-9*3')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sui/2025/step/step2/anagram/lec03_calculator/test_calculator.py", line 46, in test_invalid_syntax
+    with self.assertRaises(Exception):
+AssertionError: Exception not raised
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (failures=1)
+```
+
+## 実装詳細
+
+文字列をToken化し、括弧、abs,round,int 、剰余*/ の順に計算していき、最後に残ったプラスマイナスの式を計算する。
+
+括弧の関数で、括弧内の式を計算する時にevaluateを呼び出すことで、相互的な再帰処理を行なっている。
+
+```python
+def evaluate(tokens: list) -> float:
+    tokens = evaluate_PAREN(tokens)
+    tokens = evaluate_options(tokens)
+    tokens = evaluate_times_divide(tokens)
+		....
+    return answer
+```
+
+### tokenクラスの定義
+
+- 数字(Number)
+- 演算子(Operand : Enum )
+- absなど(MonoFunc : Enum)
