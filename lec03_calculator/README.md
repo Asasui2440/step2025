@@ -6,6 +6,12 @@
 
 括弧を含む計算、abs,round,int関数に対応している。
 
+**ファイル**  
+`calculator.py` .. 計算機のプログラム  
+`test_calculator.py`.. テストを実行するプログラム  
+
+
+
 実行コマンド
 
 ```python
