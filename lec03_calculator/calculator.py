@@ -1,8 +1,40 @@
 #! /usr/bin/python3
+# python calculator.py
+
+from enum import Enum
+from typing import Tuple
+
+
+class Number:
+    def __init__(self, value: float):
+        self.value = value
+
+
+class Operand(Enum):
+    PLUS = 1
+    MINUS = 2
+    TIMES = 3
+    DIVIEDES = 4
+
+
+class MonoFunc(Enum):
+    ABS = 1
+    ROUND = 2
+    INT = 3
+
+
+type Token = Number | Operand | MonoFunc
+
+
+class InvalidSyntaxError(Exception):
+    pass
+
 
 # Recognize numbers and store them in tokens.
 # Also recognize decimal points to enable calculations with decimals.
-def read_number(line: str, index: int) -> {dict, int}:
+def read_number(
+    line: str, index: int
+) -> Tuple[Token, int]:  # 拡張機能が古い？ typing.Listを試す
     number = 0
     while index < len(line) and line[index].isdigit():
         number = number * 10 + int(line[index])
@@ -14,7 +46,7 @@ def read_number(line: str, index: int) -> {dict, int}:
             number += int(line[index]) * decimal
             decimal /= 10
             index += 1
-    token = {"type": "NUMBER", "number": number}
+    token = Number(number)
     return token, index
 
 
@@ -22,56 +54,56 @@ def read_number(line: str, index: int) -> {dict, int}:
 
 
 # Store the "+" token and increment the index by 1
-def read_plus(index: int) -> {dict, int}:
-    token = {"type": "PLUS"}
+def read_plus(index: int) -> Tuple[Token, int]:
+    token = Operand.PLUS
     return token, index + 1
 
 
 # Store the "-" token and increment the index by 1
-def read_minus(index: int) -> {dict, int}:
-    token = {"type": "MINUS"}
+def read_minus(index: int) -> Tuple[Token, int]:
+    token = Operand.MINUS
     return token, index + 1
 
 
 # Store the "*" token and increment the index by 1
-def read_times(index: int) -> {dict, int}:
-    token = {"type": "TIMES"}
+def read_times(index: int) -> Tuple[Token, int]:
+    token = Operand.TIMES
     return token, index + 1
 
 
 # Store the "/" token and increment the index by 1
-def read_divide(index: int) -> {dict, int}:
-    token = {"type": "DIVIDE"}
+def read_divide(index: int) -> Tuple[Token, int]:
+    token = Operand.DIVIEDES
     return token, index + 1
 
 
 # Store the "(" token and increment the index by 1
-def read_kakko_left(index: int) -> {dict, int}:
-    token = {"type": "KAKKO_LEFT"}
+def read_PARENT_left(index: int) -> Tuple[Token, int]:
+    token = {"type": "PARENT_LEFT"}
     return token, index + 1
 
 
 # Store the ")" token and increment the index by 1
-def read_kakko_right(index: int) -> {dict, int}:
-    token = {"type": "KAKKO_RIGHT"}
+def read_PARENT_right(index: int) -> Tuple[dict, int]:
+    token = {"type": "PARENT_RIGHT"}
     return token, index + 1
 
 
 # Store the "abs" token and increment the index by 3 (length of "abs")
-def read_abs(index: int) -> {dict, int}:
-    token = {"type": "ABS"}
+def read_abs(index: int) -> Tuple[dict, int]:
+    token = MonoFunc.ABS
     return token, index + 3
 
 
 # Store the "round" token and increment the index by 5 (length of "round")
-def read_round(index: int) -> {dict, int}:
-    token = {"type": "ROUND"}
+def read_round(index: int) -> Tuple[Token, int]:
+    token = MonoFunc.ROUND
     return token, index + 5
 
 
 # Store the "int" token and increment the index by 3 (length of "int")
-def read_int(index: int) -> {dict, int}:
-    token = {"type": "INT"}
+def read_int(index: int) -> Tuple[Token, int]:
+    token = MonoFunc.INT
     return token, index + 3
 
 
@@ -91,14 +123,14 @@ def tokenize(line: str) -> list:
         elif line[index] == "/":
             (token, index) = read_divide(index)
         elif line[index] == "(":
-            (token, index) = read_kakko_left(index)
+            (token, index) = read_PARENT_left(index)
         elif line[index] == ")":
-            (token, index) = read_kakko_right(index)
-        elif line[index] == "a":  # abs
+            (token, index) = read_PARENT_right(index)
+        elif line[index : index + 3] == "abs":
             (token, index) = read_abs(index)
-        elif line[index] == "r":  # round
+        elif line[index : index + 5] == "round":
             (token, index) = read_round(index)
-        elif line[index] == "i":  # int
+        elif line[index : index + 3] == "int":  # 負の値だった時は０に近づく
             (token, index) = read_int(index)
         elif (
             line[index] == " "
@@ -106,8 +138,7 @@ def tokenize(line: str) -> list:
             index += 1
             continue
         else:
-            print("Invalid character found: " + line[index])
-            exit(1)
+            raise InvalidSyntaxError(f"Invalid character found: {line[index]}")
         tokens.append(token)
     return tokens
 
@@ -121,41 +152,26 @@ def tokenize(line: str) -> list:
 def evaluate_options(tokens: list) -> list:
     index = 0
     while index < len(tokens):
-        if tokens[index]["type"] == "ABS":
-            if tokens[index + 1]["type"] == "NUMBER":
-                number = abs(tokens[index + 1]["number"])
-                tokens = (
-                    tokens[:index]
-                    + [{"type": "NUMBER", "number": number}]
-                    + tokens[index + 2 :]
-                )
+        if tokens[index] == MonoFunc.ABS:
+            if isinstance(tokens[index + 1], Number):
+                number = abs(tokens[index + 1].value)
+                tokens = tokens[:index] + [Number(number)] + tokens[index + 2 :]
             else:
-                print("Invalid syntax")
-                exit(1)
+                raise InvalidSyntaxError("Invalid syntax for ABS function")
 
-        elif tokens[index]["type"] == "ROUND":
-            if tokens[index + 1]["type"] == "NUMBER":
-                number = round(tokens[index + 1]["number"])
-                tokens = (
-                    tokens[:index]
-                    + [{"type": "NUMBER", "number": number}]
-                    + tokens[index + 2 :]
-                )
+        elif tokens[index] == MonoFunc.ROUND:
+            if isinstance(tokens[index + 1], Number):
+                number = round(tokens[index + 1].value)
+                tokens = tokens[:index] + [Number(number)] + tokens[index + 2 :]
             else:
-                print("Invalid syntax")
-                exit(1)
+                raise InvalidSyntaxError("Invalid syntax for ROUND function")
 
-        elif tokens[index]["type"] == "INT":
-            if tokens[index + 1]["type"] == "NUMBER":
-                number = int(tokens[index + 1]["number"])
-                tokens = (
-                    tokens[:index]
-                    + [{"type": "NUMBER", "number": number}]
-                    + tokens[index + 2 :]
-                )
+        elif tokens[index] == MonoFunc.INT:
+            if isinstance(tokens[index + 1], Number):
+                number = int(tokens[index + 1].value)
+                tokens = tokens[:index] + [Number(number)] + tokens[index + 2 :]
             else:
-                print("Invalid syntax")
-                exit(1)
+                raise InvalidSyntaxError("Invalid syntax for INT function")
 
         else:
             index += 1
@@ -167,22 +183,27 @@ def evaluate_options(tokens: list) -> list:
 # Calculate the part enclosed by parentheses by calling the evaluate function.
 # Insert the calculation result into tokens.
 # Continue processing until all parentheses are removed.
-def evaluate_kakko(tokens: list) -> list:
+def evaluate_PARENT(tokens: list) -> list:
     index = 0
     while index < len(tokens):
-        if tokens[index]["type"] == "KAKKO_RIGHT":
+        if isinstance(tokens[index], dict) and tokens[index]["type"] == "PARENT_RIGHT":
             left_index = index - 1
             while left_index >= 0:
-                if tokens[left_index]["type"] == "KAKKO_LEFT":
+                if (
+                    isinstance(tokens[left_index], dict)
+                    and tokens[left_index]["type"] == "PARENT_LEFT"
+                ):
                     break
                 else:
                     left_index -= 1
+            if left_index < 0:
+                raise InvalidSyntaxError("Mismatched parentheses")
             part_of_tokens = tokens[left_index + 1 : index]
+            if not part_of_tokens:
+                raise InvalidSyntaxError("Empty parentheses")
             calculated_number = evaluate(part_of_tokens)
             tokens = (
-                tokens[:left_index]
-                + [{"type": "NUMBER", "number": calculated_number}]
-                + tokens[index + 1 :]
+                tokens[:left_index] + [Number(calculated_number)] + tokens[index + 1 :]
             )
             index = left_index
         else:
@@ -199,40 +220,34 @@ def evaluate_kakko(tokens: list) -> list:
 def evaluate_times_divide(tokens: list) -> list:
     index = 1
     while index < len(tokens):
-        if tokens[index]["type"] == "NUMBER":
-            if tokens[index - 1]["type"] == "TIMES":
-                if tokens[index - 2]["type"] == "NUMBER":
-                    answer = tokens[index - 2]["number"] * tokens[index]["number"]
+        if isinstance(tokens[index], Number):
+            if index - 2 >= 0 and tokens[index - 1] == Operand.TIMES:
+                if isinstance(tokens[index - 2], Number):
+                    answer = tokens[index - 2].value * tokens[index].value
                     tokens = (
-                        tokens[: index - 2]
-                        + [{"type": "NUMBER", "number": answer}]
-                        + tokens[index + 1 :]
+                        tokens[: index - 2] + [Number(answer)] + tokens[index + 1 :]
                     )
                     index -= 2
                 else:
-                    print("Invalid syntax")
-                    exit(1)
+                    raise InvalidSyntaxError("Invalid syntax for TIMES calculation")
 
-            elif tokens[index - 1]["type"] == "DIVIDE":
-                if tokens[index - 2]["type"] == "NUMBER":
-                    answer = tokens[index - 2]["number"] / tokens[index]["number"]
+            elif index - 2 >= 0 and tokens[index - 1] == Operand.DIVIEDES:
+                if isinstance(tokens[index - 2], Number):
+                    answer = tokens[index - 2].value / tokens[index].value
                     tokens = (
-                        tokens[: index - 2]
-                        + [{"type": "NUMBER", "number": answer}]
-                        + tokens[index + 1 :]
+                        tokens[: index - 2] + [Number(answer)] + tokens[index + 1 :]
                     )
                     index -= 2
                 else:
-                    print("Invalid syntax")
-                    exit(1)
+                    raise InvalidSyntaxError("Invalid syntax for  DIVIDES calculation")
 
             elif (
-                tokens[index - 1]["type"] != "PLUS"
-                and tokens[index - 1]["type"] != "MINUS"
+                tokens[index - 1] != Operand.PLUS and tokens[index - 1] != Operand.MINUS
             ):
-                print("Invalid syntax")
-                exit(1)
+                raise InvalidSyntaxError("Invalid syntax for TIMES_DIVIDES calculation")
         index += 1
+    if (Operand.TIMES in tokens) or (Operand.DIVIEDES in tokens):
+        raise InvalidSyntaxError("Invalid syntax for the removal sign")
     return tokens
 
 
@@ -242,22 +257,21 @@ def evaluate_times_divide(tokens: list) -> list:
 
 
 def evaluate(tokens: list) -> float:
-    tokens = evaluate_kakko(tokens)
+    tokens = evaluate_PARENT(tokens)
     tokens = evaluate_options(tokens)
     tokens = evaluate_times_divide(tokens)
 
     answer = 0
-    tokens.insert(0, {"type": "PLUS"})  # Insert a dummy '+' token
+    tokens.insert(0, Operand.PLUS)  # Insert a dummy '+' token
     index = 1
     while index < len(tokens):
-        if tokens[index]["type"] == "NUMBER":
-            if tokens[index - 1]["type"] == "PLUS":
-                answer += tokens[index]["number"]
-            elif tokens[index - 1]["type"] == "MINUS":
-                answer -= tokens[index]["number"]
+        if isinstance(tokens[index], Number):
+            if tokens[index - 1] == Operand.PLUS:
+                answer += tokens[index].value
+            elif tokens[index - 1] == Operand.MINUS:
+                answer -= tokens[index].value
             else:
-                print("Invalid syntax")
-                exit(1)
+                raise InvalidSyntaxError("Error for plus_minus calculation")
         index += 1
     return answer
 
@@ -296,18 +310,23 @@ def run_test():
     test("abs(-2)")  # abs
     test("int(2.2)")  # int
     test("round(2.6)")  # round
+
+    # invalid input
+    # test("*2+3")
+    # test("a2 + 3")
+    # test("abcs(2)")
+    # test("abs")
     test(
         "12 + abs(int(round(-1.55) + abs(int(-2.3 + 4))))"
     )  # As per the example. Check if parentheses, abs, int, and round are executed in the correct order.
-
     print("==== Test finished! ====\n")
 
 
 run_test()
 
-while True:
-    print("> ", end="")
-    line = input()
-    tokens = tokenize(line)
-    answer = evaluate(tokens)
-    print("answer = %f\n" % answer)
+# while True:
+#     print("> ", end="")
+#     line = input()
+#     tokens = tokenize(line)
+#     answer = evaluate(tokens)
+#     print("answer = %f\n" % answer)
