@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Optional
-# from hw1_hash_table import put
 
 # Implement a data structure that stores the most recently accessed N pages.
 # See the below test cases to see how it should work.
