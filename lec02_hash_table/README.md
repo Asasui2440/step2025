@@ -72,8 +72,6 @@ logNでできる。要素の数もわかる
 
 どちらも未実装なので、これから時間作ってやりたいです  
 以下で、自分で考えたものはO(N)でした。
-
-
   
 **◯連結リストで更新していく**  
 ・キャッシュにない要素が来たらポインタを先頭につける    
@@ -89,28 +87,30 @@ logNでできる。要素の数もわかる
 
 どちらの二つもキャッシュのサイズだけループを回す必要がある
 
-### 宿題4は現在O(N)、(Nはキャッシュサイズ）のコードなので今後修正します
 
 ### 宿題4
 
 **キャッシュ(hw4_chache.py)**   
 最近アクセスされた順にページをキャッシュしていく  
-連結リストで実装。宿題1のプログラムの使い所がわからなかった  
+双方向リストで実装
 
-**クラス：Page** 
-・self.url 　WebページのURL  
-・self.contents  Webページの内容  
-・self.next  次のWebページ  
+**クラス：Page**  
+- `self.url` 　WebページのURL  
+- `self.contents`  Webページの内容  
+- `self.prev` 前のWebページ  
+- `self.next`  次のWebページ  
 
-**クラス：Cache** 
-・self.cache　キャッシュの先頭のWebページ  
-・self.cache_size キャッシュの最大サイズ  
-・self.size キャッシュの現在の要素の数  
+**クラス：Cache**   
+- `self.cache`　キャッシュの先頭のWebページ  
+- `self.cache_size` キャッシュの最大サイズ  
+- `self.size` キャッシュの現在の要素の数  
+- `self.head` キャッシュの先頭のWebページ(ポインタ)  
+- `self.tail` キャッシュの末尾のWebページ(ポインタ)  
+- `self.hash_table` 辞書型。urlとcontentsの組みをkeyとして、Pageを返す  
 
 **関数：access_page(self : Cache, url : str, contents : str) -> None**  
 ・キャッシュの更新を行う  
-・該当のURLがキャッシュにあった場合、連結リストのURLを削除    
-・その後に、先頭のWebページを該当のURLにする    
+・該当のURLがキャッシュにあった場合、それを先頭に持ってくる  
 ・cache_sizeよりもself.sizeが大きくなってしまった場合、連結リストの最後の要素を削除する  
 
 **関数：get_pages(self : Cache)**  
