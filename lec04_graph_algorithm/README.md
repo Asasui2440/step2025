@@ -29,7 +29,7 @@
 ....
 ```
 
-実行
+`wikipedia_graph.py` の実行
 
 ```python
 largeの場合
