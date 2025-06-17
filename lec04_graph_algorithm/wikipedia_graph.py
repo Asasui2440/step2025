@@ -4,11 +4,12 @@
 
 import sys
 import collections
+from typing import Tuple
 
 
 class Wikipedia:
     # Initialize the graph of pages.
-    def __init__(self, pages_file, links_file):
+    def __init__(self: "Wikipedia", pages_file: str, links_file: str) -> None:
         # A mapping from a page ID (integer) to the page title.
         # For example, self.titles[1234] returns the title of the page whose
         # ID is 1234.
@@ -41,7 +42,7 @@ class Wikipedia:
         print()
 
     # Example: Find the longest titles.
-    def find_longest_titles(self):
+    def find_longest_titles(self: "Wikipedia"):
         titles = sorted(self.titles.values(), key=len, reverse=True)
         print("The longest titles are:")
         count = 0
@@ -54,7 +55,7 @@ class Wikipedia:
         print()
 
     # Example: Find the most linked pages.
-    def find_most_linked_pages(self):
+    def find_most_linked_pages(self: "Wikipedia"):
         link_count = {}
         for id in self.titles.keys():
             link_count[id] = 0
@@ -75,7 +76,7 @@ class Wikipedia:
     # 'goal': A title of the goal page.
 
     # titleからidを見つける
-    def find_id(self, start, goal):
+    def find_id(self: "Wikipedia", start: str, goal: str) -> Tuple[int, int]:
         for id, title in self.titles.items():
             if title == start:
                 start_id = id
@@ -88,7 +89,7 @@ class Wikipedia:
         else:
             return start_id, goal_id
 
-    def find_shortest_path(self, start, goal):
+    def find_shortest_path(self: "Wikipedia", start: str, goal: str) -> None:
         # ------------------------#
         start_id, goal_id = self.find_id(start, goal)
 
@@ -124,7 +125,7 @@ class Wikipedia:
         # ------------------------#
 
     # Homework #2: Calculate the page ranks and print the most popular pages.
-    def find_most_popular_pages(self):
+    def find_most_popular_pages(self: "Wikipedia"):
         # ------------------------#
         old_page_rank = {}
         new_page_rank = {}
@@ -192,7 +193,7 @@ class Wikipedia:
     # Search the longest path with heuristics.
     # 'start': A title of the start page.
     # 'goal': A title of the goal page.
-    def find_longest_path(self, start, goal):
+    def find_longest_path(self: "Wikipedia", start: str, goal: str) -> None:
         # ------------------------#
         # 双方向bfsで、被らないように経路を探索していき、n回目にノードが被った時点でbreakする。
         # prev_goalmeeting_node]でkeyerrorしてしまったし、動いてもパスの長さ6とかしかない
@@ -289,7 +290,7 @@ class Wikipedia:
     #     page to the goal page.
     # 'start': A title of the start page.
     # 'goal': A title of the goal page.
-    def assert_path(self, path, start, goal):
+    def assert_path(self: "Wikipedia", path: list[str], start: str, goal: str):
         assert start != goal
         assert len(path) >= 2
         assert self.titles[path[0]] == start
