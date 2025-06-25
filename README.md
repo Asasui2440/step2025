@@ -22,4 +22,11 @@ It supports:
 - Basic arithmetic operations: +, -, *, /  
 - Parentheses for order of operations  
 - Built-in functions: abs(), int(), round()  
-- Invalid or unsafe expressions are rejected for security.  
+- Invalid or unsafe expressions are rejected for security.
+
+### 📁 lec04: Graph Algorithm
+
+### 📁 lec05: TSP challenge
+
+
+
