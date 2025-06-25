@@ -1,6 +1,8 @@
 # 第5回  TSP challenge  
 
-N個の点を全て辿るように始点へ戻るルートの中で、最小のものを探す
+N個の点を全て辿るように始点へ戻るルートの中で、最小のものを探す  
+詳細：  
+https://github.com/hayatoito/google-step-tsp
 
 **実行方法(例)**
 ```
