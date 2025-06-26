@@ -17,12 +17,11 @@ python solver_opt.py input_0.csv > output_0.csv
 - greedy + opt2 + 焼きなまし
   → greedy + opt2 と全く同じ結果になってしまった。(パラメータを変えてみても変わらず)
 
-`lin_kernighan.py`  
- 単に精度が悪くなってしまいました(理由がわかりません)  
+`not_work_functions.py`
+- うまくいかなかった関数をまとめて置いておいた。(改善が見られなかったもの、機能しなかったもの、opt3全探索は実行時間が長すぎたため)
 
- `improved_annealing.py`  
-  - 近傍法 + 焼きなまし + 5個の初期解から最良のものを選ぶ
-
+`improved_annealing.py`
+- 近傍法を用いて、焼きなましを行なってみたが、機能しなかった  
 
 
 | 手法                          | N = 5 | N = 8 | N = 16 | N = 64 | N = 128 | N = 512 | N = 2048 |
