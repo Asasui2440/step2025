@@ -12,9 +12,9 @@ python solver_opt.py input_0.csv > output_0.csv
 **ファイル**  
 `solver_opt.py`
 - greedy + opt2
-- greedy + opt3
-- 近傍法
-- greedy + opt2 + 焼きなまし
+- 多始点greedy + opt3(ランダムに辺を取ってiteration回試す)
+- 
+- 多始点greedy + opt2 + 焼きなまし
   → greedy + opt2 と全く同じ結果になってしまった。(パラメータを変えてみても変わらず)
 
 `not_work_functions.py`
