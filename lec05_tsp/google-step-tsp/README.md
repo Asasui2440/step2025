@@ -11,15 +11,22 @@ python solver_opt.py input_0.csv > output_0.csv
 
 **ファイル**  
 `solver_opt.py`
-- greedy + opt2
-- 多始点greedy + opt3(ランダムに辺を取ってiteration回試す)
-- 
-- 多始点greedy + opt2 + 焼きなまし
-  → greedy + opt2 と全く同じ結果になってしまった。(パラメータを変えてみても変わらず)
+- greedy_multi_start  
+10個ランダムに開始点を選んで、最も良かったルートを採用
+  
+- opt3_random  
+ランダムに3つ辺を取ってスコアが良くなったら採用。これをiteration回試す
+- solve_opt2  
+2つの辺を組み替える(交差がなくなるまで行う)
+
+**その他** 
 
 `not_work_functions.py`
 - うまくいかなかった関数をまとめて置いておいた。(改善が見られなかったもの、機能しなかったもの、opt3全探索は実行時間が長すぎたため)
 
+`solver_opt3.py`
+- opt3の実行時間が長すぎるので、実行時間削減verも試してみた
+  
 `improved_annealing.py`
 - 近傍法を用いて、焼きなましを行なってみたが、機能しなかった  
 
