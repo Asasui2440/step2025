@@ -33,6 +33,7 @@ def total_distance(tour: list[int], dist_matrix: list[list[float]]) -> float:
 
 
 def solve_opt2(tour: list[int], dist_matrix: list[list[float]]) -> list[int]:
+    tour = tour[:]
     improved = True
     while improved:
         improved = False
@@ -49,10 +50,10 @@ def solve_opt2(tour: list[int], dist_matrix: list[list[float]]) -> list[int]:
 
     return tour
 
-
+# 貪欲法を、min(200,N)個の開始点で試して一番良いtourを選ぶ
 def solve_greedy_multi_start(dist_matrix: list[list[float]]) -> list[int]:
     N = len(dist_matrix)
-    start_points = random.sample(range(N), min(10, N))
+    start_points = random.sample(range(N), min(200, N))
     best_tour = None
     best_distance = float("inf")
 
@@ -77,7 +78,7 @@ def solve_greedy_multi_start(dist_matrix: list[list[float]]) -> list[int]:
 
     return best_tour
 
-
+# 3本の辺を取って組み替える
 def three_opt(tour: list[int], dist_matrix: list[list[float]]):
     n = len(tour)
     while True:
@@ -109,11 +110,11 @@ def three_opt(tour: list[int], dist_matrix: list[list[float]]):
 
     return best_tour
 
-
+# three_optを10万回実行
 def solve_opt3_random(
     tour: list[int],
     dist_matrix: list[list[float]],
-    iterations: int = 50000,
+    iterations: int = 100000,
 ) -> list[int]:
     """ランダム3-opt最適化 - O(iterations)"""
     best_tour = tour[:]
@@ -130,18 +131,117 @@ def solve_opt3_random(
     return best_tour
 
 
+# ランダムに1つの辺を取ってきて、どこかに挿入する
+def or_opt(tour: list[int], dist_matrix: list[list[float]]):
+    best_tour = tour[:]
+    best_cost = total_distance(tour, dist_matrix)
+
+    n = len(tour)
+    for _ in range(10):
+        segment_length = random.randint(1, min(3, n - 1))
+        i = random.randint(0, n - segment_length)
+        j = i + segment_length
+        segment = tour[i:j]
+        rest = tour[:i] + tour[j:]
+
+        insert_pos = random.randint(0, len(rest))
+        new_tour = rest[:insert_pos] + segment + rest[insert_pos:]
+        new_cost = total_distance(new_tour, dist_matrix)
+
+        if new_cost < best_cost:
+            best_tour = new_tour[:]
+            best_cost = new_cost
+    return best_tour
+
+
+# 2本の辺を取ってきて交換。10回やっていちばんいいtourを返す
+def two_opt(tour: list[int], dist_matrix: list[list[float]]) -> list[int]:
+    best_tour = tour[:]
+    best_cost = total_distance(tour, dist_matrix)
+    n = len(tour)
+    for _ in range(10):
+        i, j = sorted(random.sample(range(n), 2))
+        if j - i <= 1:
+            j = (j + 1) % n
+        new_tour = tour[:i] + list(reversed(tour[i : j + 1])) + tour[j + 1 :]
+        new_cost = total_distance(new_tour, dist_matrix)
+        if new_cost < best_cost:
+            best_tour = new_tour
+            best_cost = new_cost
+    return best_tour
+
+
+# アニーリング
+def solve_annealing(
+    tour: list[int],
+    dist_matrix: list[list[float]],
+    initial_temp=None,
+    final_temp=1e-7,
+    alpha=0.9999,
+    max_iter=int(1e7),
+) -> list[int]:
+    
+    def neighbor(tour):
+        p = random.random()
+        if p < 0.35:
+            return two_opt(tour, dist_matrix)
+        elif p < 0.65:
+            return three_opt(tour, dist_matrix)
+        else:
+            return or_opt(tour, dist_matrix)
+        
+    current_tour = tour[:]
+    best_tour = tour[:]
+    current_cost = total_distance(current_tour, dist_matrix)
+    best_cost = current_cost
+
+    if initial_temp is None:
+        initial_temp = current_cost * 0.3
+
+    temp = initial_temp
+
+    for iter in range(max_iter):
+        if iter % 50000 == 0 and iter < 1e7:
+            print("iter = ", iter)
+            print("temp= ",temp)
+        
+        new_tour = neighbor(current_tour)
+        new_cost = total_distance(new_tour,dist_matrix)
+
+        delta = new_cost - current_cost
+
+        if delta < 0 or math.exp(-delta / temp) > random.random():
+            # if delta < 0:
+            #    print(f"iter: {iter}, temp: {temp}, delta: {delta}")
+            current_tour = new_tour[:]
+            current_cost = new_cost
+            if current_cost < best_cost:
+                best_tour = current_tour[:]
+                best_cost = current_cost
+
+        temp *= alpha
+        #print("new_temp= ",temp)
+        if temp < final_temp:
+            break
+
+    return best_tour
+
+
 if __name__ == "__main__":
     assert len(sys.argv) > 1
     cities = read_input(sys.argv[1])
     dist_matrix = distance_matrix(cities)
 
     tour = solve_greedy_multi_start(dist_matrix)
-    # print("greedy = ", total_distance(tour, dist_matrix))
+    print("greedy = ", total_distance(tour, dist_matrix))
 
     tour = solve_opt2(tour, dist_matrix)
-    # print("opt2 = ", total_distance(tour, dist_matrix))
+    print("opt2 = ", total_distance(tour, dist_matrix))
+
+    tour = solve_annealing(tour,dist_matrix)
+    print("annealing = ", total_distance(tour, dist_matrix))
 
     tour = solve_opt3_random(tour, dist_matrix)
-    # print("opt3 = ", total_distance(tour, dist_matrix))
+    print("opt3 = ", total_distance(tour, dist_matrix))
 
-    print_tour(tour)
+    # print_tour(tour)
