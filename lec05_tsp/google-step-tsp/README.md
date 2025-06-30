@@ -33,7 +33,7 @@ python solver_opt.py input_0.csv > output_0.csv
 - `solver_iniput7.py`
 - `c++_solver_input7.cc`
 - とりあえず多始点貪欲法 + opt2で交差解消のみ
-- pythonのコードをc++に翻訳して、開始点をたくさん試せるようにした。  
+- claude.aiにpythonのコードをc++翻訳させて、開始点をたくさん試せるようにした。  
 
 始点を300回試した時  
 greedy = 95222.8  
