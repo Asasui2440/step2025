@@ -30,7 +30,7 @@ python solver_opt.py input_0.csv > output_0.csv
 ランダムに3つ辺を取ってスコアが良くなったら採用。これをiteration回試す
   
 ### N = 8192 用の実行ファイル  
-- `solver_iniput7.py`
+- `solver_input7.py`
 - `c++_solver_input7.cc`
 - とりあえず多始点貪欲法 + opt2で交差解消のみ
 - claude.aiにpythonのコードをc++翻訳させて、開始点をたくさん試せるようにした。  
