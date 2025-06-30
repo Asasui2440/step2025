@@ -131,7 +131,7 @@ def solve_opt3_random(
     return best_tour
 
 
-# ランダムに1つの辺を取ってきて、どこかに挿入する
+# ランダムに、長さ1~3の1つの辺を取ってきて、どこかに挿入する
 def or_opt(tour: list[int], dist_matrix: list[list[float]]):
     best_tour = tour[:]
     best_cost = total_distance(tour, dist_matrix)
