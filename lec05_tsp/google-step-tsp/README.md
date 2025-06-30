@@ -11,6 +11,7 @@ python solver_opt.py input_0.csv > output_0.csv
 
 ### 実行ファイル solver_opt.py
 
+**関数の説明**  
 - **greedy_multi_start**   
   貪欲法。min(100,N)回ランダムに開始点を選んで、最も良かったルートを採用
   
@@ -28,7 +29,18 @@ python solver_opt.py input_0.csv > output_0.csv
 - **opt3_random**   
 ランダムに3つ辺を取ってスコアが良くなったら採用。これをiteration回試す
   
+### N = 8192 用の実行ファイル  
+- `solver_iniput7.py`
+- `c++_solver_input7.cc`
+- とりあえず多始点貪欲法 + opt2で交差解消のみ
+- pythonのコードをc++に翻訳して、開始点をたくさん試せるようにした。  
 
+始点を300回試した時  
+greedy = 95222.8  
+opt2 = 84642.9  ←スコア  
+
+<br>
+  
 **その他** 
 - `lin_kernighan.py`
   k本の辺を組み替えて、一番よかったものを採用。まだ修正していないので動かない
