@@ -20,11 +20,12 @@ python solver_opt.py input_0.csv > output_0.csv
 
 - **solve_annealing**   
   焼きなまし法。初期温度= 初期の合計距離*0.3,alpha = 0.9995, 最終温度=1e-7  
-  iterationごとにある確率で、2opt,3opt,or_optを行う  
+  iterationごとにある確率で、2opt、3opt、or_optを行う  
   参考: https://qiita.com/take314/items/69b93481403feb857d6e
 
   - **or_opt**  
      ランダムに、長さ1~3の辺を取ってきて、どこかに挿入する
+
     
 - **opt3_random**   
 ランダムに3つ辺を取ってスコアが良くなったら採用。これをiteration回試す
