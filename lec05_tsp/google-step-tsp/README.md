@@ -61,6 +61,10 @@ python solver_opt.py input_0.csv > output_0.csv
 なぜなのかあまり理解できていません。tourを上書きしていくので元のtourが変わっても平気な気がしてしまいます。
 - or_opt, 2optで10回ループを回していたが、そうではなくてannealing自体を10^8回くらい回した方が良い気がしてきた。 
 
+### 追記
+- Githubに上げてるsolver_opt.pyをもう一回実行してみたらやっぱりannealingがうまくいっていませんでした。  
+- なぜうまくいった時があったのかがわかりません  
+
 
 
 
