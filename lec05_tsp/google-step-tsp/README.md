@@ -6,30 +6,18 @@ https://github.com/hayatoito/google-step-tsp
 
 **実行方法(例)**
 ```
-python solver_opt.py input_0.csv > output_0.csv
+python solver_opt.py input_0.csv output_0.csv
 ```
 
 ### 実行ファイル solver_opt.py
+多始点貪欲 + 焼きなまし法
+参考：
+https://qiita.com/take314/items/69b93481403feb857d6e
 
-**関数の説明**  
-- **greedy_multi_start**   
-  貪欲法。min(100,N)回ランダムに開始点を選んで、最も良かったルートを採用
-  
-- **solve_opt2**     
-2つの辺を組み替える(交差がなくなるまで行う)
+**c++_solver.cc** 
+- solver_opt.pyをc++に翻訳させて、iterationを増やして実行した  
 
-- **solve_annealing**   
-  焼きなまし法。初期温度= 初期の合計距離*0.3,alpha = 0.9995, 最終温度=1e-7  
-  iterationごとにある確率で、2opt、3opt、or_optを行う  
-  参考: https://qiita.com/take314/items/69b93481403feb857d6e
 
-  - **or_opt**  
-     ランダムに、長さ1~3の辺を取ってきて、どこかに挿入する
-
-    
-- **opt3_random**   
-ランダムに3つ辺を取ってスコアが良くなったら採用。これをiteration回試す
-  
 ### N = 8192 用の実行ファイル  
 - `solver_input7.py`
 - `c++_solver_input7.cc`
@@ -39,12 +27,6 @@ python solver_opt.py input_0.csv > output_0.csv
 始点を300回試した時  
 greedy = 95222.8  
 opt2 = 84642.9  ←スコア  
-
-<br>
-  
-**その他** 
-- `lin_kernighan.py`
-  k本の辺を組み替えて、一番よかったものを採用。まだ修正していないので動かない
 
 <br>
 
@@ -70,22 +52,12 @@ opt2 = 84642.9  ←スコア
 
 ### チャレンジ3
 
-- annealingが成功。一番良い結果になった。
-- annealingが機能していなかった理由は、opt2の関数内でtour= tour[:]　のようにtourを一回コピーする必要があったらしいですが  
-なぜなのかあまり理解できていません。tourを上書きしていくので元のtourが変わっても平気な気がしてしまいます。
-- or_opt, 2optで10回ループを回していたが、そうではなくてannealing自体を10^8回くらい回した方が良い気がしてきた。 
-
-
+焼きなまし法が上手く行った。焼きなまし法の概要について、そもそも理解していなかったことが原因で色々間違えていました。  
 
 | 手法                                             | N = 5 | N = 8 | N = 16 | N = 64 | N = 128 | N = 512 | N = 2048 |
 |--------------------------------------------------|--------|--------|---------|---------|----------|-----------|------------|
-| greedy_multi_start + opt2 + annealing + opt3_random | 3418 | 3778   | 4494    | **8172**    | **10712**    | **21554**     | **42553**      |
-
-
-### 追記
-- Githubに上げてるsolver_opt.pyをもう一回実行してみたらやっぱりannealingがうまくいっていませんでした。
-- greedyのスコアから全然スコアが改善されませんでした。  
-- なぜうまくいった時があったのかがわかりません  
+| greedy_multi_start + annealing | 3418 | 3778   | 4494    | **8118**    | **10601**    | **20254.9**     | **41348**      |
+ 
 
 
 
