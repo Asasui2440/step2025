@@ -240,6 +240,7 @@ def solve_annealing(
     stag_check_before_cost = current_cost
 
     while final_temp < temp and iter < max_iter:
+        # 焼きなましの主要部分------
         new_tour = neighbor(current_tour)
         new_cost = total_distance(new_tour, dist_matrix)
 
@@ -250,6 +251,7 @@ def solve_annealing(
             current_cost = new_cost
 
         temp *= alpha
+        # ------------------------
 
         # デバッグ
         # 途中経過を見る
@@ -258,6 +260,7 @@ def solve_annealing(
             print("temp= ", temp)
             print("score= ", current_cost)
 
+        # ここでは500万回回しても距離が変わらなければ、局所解とみなして温度をリセット
         if abs(stag_check_before_cost - current_cost) < 0.01:
             stagnation_counter += 1
             if stagnation_counter > 5000000:
