@@ -262,6 +262,8 @@ def solve_annealing(
             print("score= ", current_cost)
 
         # ここでは500万回回しても距離が変わらなければ、局所解とみなして温度をリセット
+        # 初期温度にリセットすると、計算時間が長くなりそうだなと思ったので、なんとなく初期温度の0.1にリセットするようにした。
+        # その温度でも局所解からは抜け出せていそうだった。
         if abs(stag_check_before_cost - current_cost) < 0.01:
             stagnation_counter += 1
             if stagnation_counter > 5000000:
