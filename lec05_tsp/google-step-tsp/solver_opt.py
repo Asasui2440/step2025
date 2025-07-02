@@ -246,6 +246,7 @@ def solve_annealing(
 
         delta = new_cost - current_cost
 
+        # 距離が短くなった時 or 長くなっても確率的にそのルートを採用
         if delta < 0 or math.exp(-delta / temp) > random.random():
             current_tour = new_tour[:]
             current_cost = new_cost
