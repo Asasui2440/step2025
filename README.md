@@ -25,11 +25,15 @@ It supports:
 - Invalid or unsafe expressions are rejected for security.
 
 ### 📁 lec04: Graph Algorithm
-``: Calculate the page rank, and try to find the longest path of stations
+`wikipedia_graph.py`: 
+- Find the shortest path with BFS
+- Calculate the page ranks
+- Try to find the longest path between stations '池袋' and '渋谷'.
 
 ### 📁 lec05: TSP challenge
 Traveling Salesperson Problem    
 `solver_opt.py` : Solving the problem using nearest neighbor methods and simulated Annealing
+
 
 
 
