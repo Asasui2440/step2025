@@ -25,10 +25,11 @@ It supports:
 - Invalid or unsafe expressions are rejected for security.
 
 ### 📁 lec04: Graph Algorithm
-``: ページランクの計算、最長経路問題を解く
+``: Calculate the page rank, and try to find the longest path of stations
 
 ### 📁 lec05: TSP challenge
-`solver_opt.py` : 近傍法+焼きなまし法を用いて巡回セールスパーソン問題を解く
+Traveling Salesperson Problem    
+`solver_opt.py` : Solving the problem using nearest neighbor methods and simulated Annealing
 
 
 
