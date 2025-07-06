@@ -25,8 +25,10 @@ It supports:
 - Invalid or unsafe expressions are rejected for security.
 
 ### 📁 lec04: Graph Algorithm
+``: ページランクの計算、最長経路問題を解く
 
 ### 📁 lec05: TSP challenge
+`solver_opt.py` : 近傍法+焼きなまし法を用いて巡回セールスパーソン問題を解く
 
 
 
