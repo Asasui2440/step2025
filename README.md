@@ -32,7 +32,11 @@ It supports:
 
 ### 📁 lec05: TSP challenge
 Traveling Salesperson Problem    
-`solver_opt.py` : Solving the problem using nearest neighbor methods and simulated Annealing
+`solver_opt.py` : Solving the problem using nearest neighbor methods and simulated Annealing  
+<br>
+In lec06, we tried 8192 cities.  
+
+### 📁 lec07: Malloc Challenge
 
 
 
