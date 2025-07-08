@@ -149,8 +149,7 @@ void *my_malloc(size_t size) {
       metadata = metadata->next;
     }
     
-    // bin内でbest_fit_metadataが得られたなら、それがbest fitなことが確定するので、
-    //大きいサイズのbinは探す必要がないと思う
+    // bin内でbest_fit_metadataが得られたならそれより大きいサイズのbinは探す必要がないと思う
     if (best_fit_metadata) {
       break;
     }
@@ -233,7 +232,7 @@ void my_free(void *ptr) {
 
 // This is called at the end of each challenge.
 void my_finalize() {
-  
+
   // 統計情報を出力
   printf("=== Memory Statistics ===\n");
   printf("Total allocated size: %zu bytes\n", total_allocated_size);
