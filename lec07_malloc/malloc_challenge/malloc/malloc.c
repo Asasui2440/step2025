@@ -61,7 +61,7 @@ void my_add_to_free_list(my_metadata_t *metadata) {
   while(current){
     my_metadata_t *next = current->next; // 先に次のポインタを保存
     
-    //左結合： freeにしようとしてるmetadataの前が空き領域だった時
+    //左結合： freeにしようとしてるmetadataの前(左)が空き領域だった時
     if ((char*)current + sizeof(my_metadata_t) + current->size == (char*)metadata){
         my_remove_from_free_list(current, prev);
         current->size += sizeof(my_metadata_t) + metadata->size;
@@ -70,7 +70,7 @@ void my_add_to_free_list(my_metadata_t *metadata) {
         break; 
     }
     //右結合：freeにしようとしてるmetadataの次が空き領域だったとき
-    // ポインタの位置は変わらない
+    // metadataのポインタの位置は変わらない
     else if((char*)metadata + sizeof(my_metadata_t) + metadata->size == (char*)current){
         my_remove_from_free_list(current, prev);
         metadata->size += sizeof(my_metadata_t) + current->size;
@@ -82,7 +82,7 @@ void my_add_to_free_list(my_metadata_t *metadata) {
     current = next;
   }
 
-  // 結合した場合は再度チェック、そうでなければfree listに追加
+  // 結合した場合は再度チェック(それによって両側結合できる)、そうでなければfree listに追加
   if (merged) {
     my_add_to_free_list(metadata); 
   } else {
@@ -105,11 +105,13 @@ void my_initialize() {
 // allowed to use any library functions other than mmap_from_system /
 // munmap_to_system.
 void *my_malloc(size_t size) {
-  my_metadata_t *metadata = my_heap.free_head;
+  my_metadata_t *metadata = my_heap.free_head; //空き領域
   my_metadata_t *prev = NULL;
-  // First-fit: Find the first free slot the object fits.
+
+  // best fit
   my_metadata_t *best_fit_metadata = NULL;
   my_metadata_t *best_fit_prev = NULL;
+
 
   while (metadata) {
     if(metadata->size >= size){
