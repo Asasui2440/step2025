@@ -82,14 +82,6 @@ void my_remove_from_free_list(my_metadata_t *metadata, my_metadata_t *prev,int b
 // Interfaces of malloc (DO NOT RENAME FOLLOWING FUNCTIONS!)
 //
 
-// 統計情報用の変数
-static size_t total_allocated_size = 0;  // 確保したメモリ領域の合計サイズ
-static size_t total_system_requests = 0; // システムへの要求回数
-
-// リクエストサイズの分布を記録
-static size_t size_distribution[BIN_COUNT] = {0};
-static size_t total_malloc_requests = 0;
-
 
 // This is called at the beginning of each challenge.
 void my_initialize() {
@@ -98,14 +90,7 @@ void my_initialize() {
     my_heap.dummy[i].size = 0;
     my_heap.dummy[i].next = NULL;
   }
-  
-  // 統計情報の初期化
-  total_allocated_size = 0;
-  total_system_requests = 0;
-  total_malloc_requests = 0;
-  for (int i = 0; i < BIN_COUNT; i++) {
-    size_distribution[i] = 0;
-  }
+
 }
 
 
@@ -115,11 +100,6 @@ void my_initialize() {
 // 4000. You are not allowed to use any library functions other than
 // mmap_from_system() / munmap_to_system().
 void *my_malloc(size_t size) {
-
-  // リクエストサイズの分布を記録~
-  total_malloc_requests++;
-  int bucket = get_bin_index(size);
-  size_distribution[bucket]++;
 
   int start_bin = get_bin_index(size);
   int best_fit_bin = -1;
@@ -173,9 +153,6 @@ void *my_malloc(size_t size) {
     metadata->size = buffer_size - sizeof(my_metadata_t);
     metadata->next = NULL;
     
-    // 統計情報を更新
-    total_allocated_size += buffer_size;
-    total_system_requests++;
     
     // Add the memory region to the free list.
     my_add_to_free_list(metadata);
@@ -233,25 +210,6 @@ void my_free(void *ptr) {
 // This is called at the end of each challenge.
 void my_finalize() {
 
-  // 統計情報を出力
-  printf("=== Memory Statistics ===\n");
-  printf("Total allocated size: %zu bytes\n", total_allocated_size);
-  printf("Total system requests: %zu\n", total_system_requests);
-  printf("Total malloc requests: %zu\n", total_malloc_requests);
-  printf("\n=== Request Size Distribution ===\n");
-  
-  const char* size_labels[BIN_COUNT] = {
-    "  8", " 16", " 24", " 32", " 48", " 64", " 96", "128", "256", "512", "1K ", "2K ", ">2K"
-  };
-  
-  for (int i = 0; i < BIN_COUNT; i++) {
-    if (size_distribution[i] > 0) {
-      double percentage = (double)size_distribution[i] / total_malloc_requests * 100.0;
-      printf("%s bytes: %5zu requests (%5.1f%%)\n", 
-             size_labels[i], size_distribution[i], percentage);
-    }
-  }
-  printf("================================\n");
 }
 
 void test() {
