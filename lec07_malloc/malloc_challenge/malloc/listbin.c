@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include<math.h>
 
 //
 // Interfaces to get memory pages from OS
@@ -25,22 +26,27 @@ void munmap_to_system(void *ptr, size_t size);
 // Struct definitions
 //
 
- #define BIN_COUNT 13
+ #define BIN_COUNT 10
 
+
+
+// get_bin_index 
+// size <= 8,  return 0
+// size <= 16, return 1
+// size <= 32, return 2
+// size <= 64, return 3
+// size <= 128, return 4
+// size <= 256, return 5
+// size <= 512, return 6
+// size <= 1024, return 7
+// size <= 2048, return 8
+// size <= 4096, return 9
+
+// コメント書くくらいならわざわざコードを簡潔にする必要ない気もしてきた
 int get_bin_index(size_t size) {
-  if(size <= 8) return 0;
-  if(size <= 16) return 1;
-  if(size <= 24) return 2;
-  if(size <= 32) return 3;
-  if(size <= 48) return 4;
-  if(size <= 64) return 5;
-  if(size <= 96) return 6;
-  if(size <= 128) return 7;
-  if(size <= 256) return 8;
-  if(size <= 512) return 9;
-  if(size <= 1024) return 10;
-  if(size <= 2048) return 11;
-  return 12; // >2048
+  for(int i=3;i<12;i++){
+    if(size <= pow(2,i)) return i-3;
+  }
 }
 
 typedef struct my_metadata_t {
