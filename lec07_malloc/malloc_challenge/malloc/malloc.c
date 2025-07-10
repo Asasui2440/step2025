@@ -82,14 +82,10 @@ void my_add_to_free_list(my_metadata_t *metadata) {
     current = next;
   }
 
-  // 結合した場合は再度チェック(それによって両側結合できる)、そうでなければfree listに追加
-  if (merged) {
-    my_add_to_free_list(metadata); 
-  } else {
     metadata->next = my_heap.free_head;
     my_heap.free_head = metadata;
   }
-}
+
 
 
 
@@ -118,6 +114,10 @@ void *my_malloc(size_t size) {
     if(!best_fit_metadata || best_fit_metadata->size > metadata->size){
         best_fit_metadata = metadata;
         best_fit_prev = prev;
+        // ちょうど大きさが一致してたらbreak
+        if(best_fit_metadata->size == size){
+          break;
+        }
     }
     }
     prev = metadata;
