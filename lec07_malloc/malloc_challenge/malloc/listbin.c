@@ -42,6 +42,7 @@ void munmap_to_system(void *ptr, size_t size);
 // size <= 2048, return 8
 // size <= 4096, return 9
 
+// コメント書くくらいならわざわざコードを簡潔にする必要ない気もしてきた
 int get_bin_index(size_t size) {
   for(int i=3;i<12;i++){
     if(size <= pow(2,i)) return i-3;
