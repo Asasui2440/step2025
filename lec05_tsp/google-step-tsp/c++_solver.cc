@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <limits>
+#include <iterator>
 #include <chrono>
 #include<fstream>
 
@@ -100,187 +101,106 @@ private:
         
         return best_tour;
     }
+
     
-    std::vector<int> solve_opt2(std::vector<int> tour) {
-        bool improved = true;
-        while (improved) {
-            improved = false;
-            for (int i = 1; i < (int)tour.size() - 2; i++) {
-                for (int j = i + 1; j < (int)tour.size() - 1; j++) {
-                    int a = tour[i - 1], b = tour[i];
-                    int c = tour[j], d = tour[j + 1];
-                    
-                    if (dist_matrix[a][b] + dist_matrix[c][d] > 
-                        dist_matrix[a][c] + dist_matrix[b][d]) {
-                        std::reverse(tour.begin() + i, tour.begin() + j + 1);
-                        improved = true;
-                    }
-                }
-            }
-        }
-        return tour;
-    }
     
-    std::vector<int> solve_opt3(std::vector<int> tour, int iterations = 100000) {
-        bool improved = true;
-        int iter = 0;
-        
-        while (improved && iter < iterations) {
-            improved = false;
-            for (int i = 1; i < (int)tour.size() - 3 && !improved; i++) {
-                for (int j = i + 1; j < (int)tour.size() - 2 && !improved; j++) {
-                    for (int k = j + 1; k < (int)tour.size() - 1 && !improved; k++) {
-                        double current_cost = total_distance(tour);
-                        iter++;
-                        
-                        std::vector<int> P1(tour.begin(), tour.begin() + i);
-                        std::vector<int> P2(tour.begin() + i, tour.begin() + j);
-                        std::vector<int> P3(tour.begin() + j, tour.begin() + k);
-                        std::vector<int> P4(tour.begin() + k, tour.end());
-                        
-                        std::vector<int> P2_rev = P2;
-                        std::reverse(P2_rev.begin(), P2_rev.end());
-                        std::vector<int> P3_rev = P3;
-                        std::reverse(P3_rev.begin(), P3_rev.end());
-                        
-                        std::vector<std::vector<int>> patterns = {
-                            P1, P3, P2, P4,
-                            P1, P2_rev, P3_rev, P4,
-                            P1, P3, P2_rev, P4,
-                            P1, P3_rev, P2, P4,
-                            P1, P3_rev, P2_rev, P4
-                        };
-                        
-                        for (int p = 0; p < 5; p++) {
-                            std::vector<int> pattern;
-                            pattern.insert(pattern.end(), patterns[p*4].begin(), patterns[p*4].end());
-                            pattern.insert(pattern.end(), patterns[p*4+1].begin(), patterns[p*4+1].end());
-                            pattern.insert(pattern.end(), patterns[p*4+2].begin(), patterns[p*4+2].end());
-                            pattern.insert(pattern.end(), patterns[p*4+3].begin(), patterns[p*4+3].end());
-                            
-                            double new_cost = total_distance(pattern);
-                            if (new_cost < current_cost) {
-                                tour = pattern;
-                                improved = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return tour;
-    }
-    
-    std::vector<int> or_opt(const std::vector<int>& tour) {
+    std::pair<std::vector<int>, double> two_opt(const std::vector<int>& tour, double cost) {
         int n = tour.size();
-        std::uniform_int_distribution<int> segment_dist(1, std::min(3, n - 1));
-        int segment_length = segment_dist(rng);
         
-        std::uniform_int_distribution<int> pos_dist(0, n - segment_length);
-        int i = pos_dist(rng);
-        int j = i + segment_length;
+        // 境界チェックを厳密に
+        std::uniform_int_distribution<int> i_dist(1, n - 3);
+        std::uniform_int_distribution<int> j_dist(2, n - 2);
         
-        std::vector<int> segment(tour.begin() + i, tour.begin() + j);
-        std::vector<int> rest;
-        rest.insert(rest.end(), tour.begin(), tour.begin() + i);
-        rest.insert(rest.end(), tour.begin() + j, tour.end());
+        int i = i_dist(rng);
+        int j = j_dist(rng);
         
-        std::uniform_int_distribution<int> insert_dist(0, rest.size());
-        int insert_pos = insert_dist(rng);
+        if (i >= j) {
+            std::swap(i, j);
+        }
         
-        std::vector<int> new_tour;
-        new_tour.insert(new_tour.end(), rest.begin(), rest.begin() + insert_pos);
-        new_tour.insert(new_tour.end(), segment.begin(), segment.end());
-        new_tour.insert(new_tour.end(), rest.begin() + insert_pos, rest.end());
+        if (j - i <= 1) {
+            return std::make_pair(tour, cost);
+        }
         
-        return new_tour;
-    }
-    
-    std::vector<int> two_opt(const std::vector<int>& tour) {
-        int n = tour.size();
-        int i, j;
+        // 差分コスト計算
+        int a = tour[i - 1];
+        int b = tour[i];
+        int c = tour[j];
+        int d = tour[j + 1];
         
-        do {
-            std::uniform_int_distribution<int> dist(0, n - 1);
-            i = dist(rng);
-            j = dist(rng);
-            if (i > j) std::swap(i, j);
-        } while (j - i <= 1);
+        double cost_gap = dist_matrix[a][c] + dist_matrix[b][d] 
+                        - dist_matrix[a][b] - dist_matrix[c][d];
         
         std::vector<int> new_tour = tour;
         std::reverse(new_tour.begin() + i, new_tour.begin() + j + 1);
-        return new_tour;
+        
+        return std::make_pair(new_tour, cost + cost_gap);
     }
-    
-    std::vector<int> three_opt(const std::vector<int>& tour) {
+
+    // or_1_opt
+    std::pair<std::vector<int>, double> or_opt(const std::vector<int>& tour, double cost) {
         int n = tour.size();
-        int a, b, c;
-        
-        do {
-            std::uniform_int_distribution<int> dist(0, n - 1);
-            a = dist(rng);
-            b = dist(rng);
-            c = dist(rng);
-            
-            if (a > b) std::swap(a, b);
-            if (b > c) std::swap(b, c);
-            if (a > b) std::swap(a, b);
-        } while (b - a <= 1 || c - b <= 1);
-        
-        std::vector<int> P1(tour.begin(), tour.begin() + a);
-        std::vector<int> P2(tour.begin() + a, tour.begin() + b);
-        std::vector<int> P3(tour.begin() + b, tour.begin() + c);
-        std::vector<int> P4(tour.begin() + c, tour.end());
-        
-        std::vector<int> P2_rev = P2;
-        std::reverse(P2_rev.begin(), P2_rev.end());
-        std::vector<int> P3_rev = P3;
-        std::reverse(P3_rev.begin(), P3_rev.end());
-        
-        std::vector<std::vector<int>> patterns = {
-            P1, P3, P2, P4,
-            P1, P2_rev, P3_rev, P4,
-            P1, P3, P2_rev, P4,
-            P1, P3_rev, P2, P4,
-            P1, P3_rev, P2_rev, P4
-        };
-        
-        std::uniform_int_distribution<int> pattern_dist(0, 4);
-        int pattern_index = pattern_dist(rng);
-        
-        std::vector<int> new_tour;
-        new_tour.insert(new_tour.end(), patterns[pattern_index*4].begin(), patterns[pattern_index*4].end());
-        new_tour.insert(new_tour.end(), patterns[pattern_index*4+1].begin(), patterns[pattern_index*4+1].end());
-        new_tour.insert(new_tour.end(), patterns[pattern_index*4+2].begin(), patterns[pattern_index*4+2].end());
-        new_tour.insert(new_tour.end(), patterns[pattern_index*4+3].begin(), patterns[pattern_index*4+3].end());
-        
-        return new_tour;
+
+
+    std::uniform_int_distribution<int> pos_dist(0, n - 1);
+    int i = pos_dist(rng);
+
+   // 挿入位置（i自身は不可）
+    std::vector<int> valid_positions;
+    for (int pos = 0; pos <= n; ++pos) {
+        if (pos != i && pos!=i+1) valid_positions.push_back(pos);
     }
-    
-    std::vector<int> neighbor(const std::vector<int>& tour) {
+    if (valid_positions.empty()) return std::make_pair(tour, cost);
+    std::uniform_int_distribution<int> insert_dist(0, valid_positions.size() - 1);
+    int insert_pos = valid_positions[insert_dist(rng)];
+
+    // 差分コスト計算
+    int seg = tour[i];
+    int before_seg = tour[(i - 1 + n) % n];
+    int after_seg = tour[(i + 1) % n];
+   
+    int insert_before = tour[(insert_pos - 1 + n) % n];
+    int insert_after = tour[insert_pos % n];
+
+
+     double cost_gap = dist_matrix[before_seg][after_seg]
+                    + dist_matrix[insert_before][seg]
+                    + dist_matrix[seg][insert_after]
+                    - dist_matrix[before_seg][seg]
+                    - dist_matrix[seg][after_seg]
+                    - dist_matrix[insert_before][insert_after];
+
+    // 新しいツアーを構築する
+    std::vector<int> new_tour = tour;
+    new_tour.erase(new_tour.begin() + i);
+    int insert_idx = (insert_pos < i) ? insert_pos : insert_pos - 1;
+    new_tour.insert(new_tour.begin() + insert_idx, seg);
+
+    return std::make_pair(new_tour, cost + cost_gap);
+    }
+
+    std::pair<std::vector<int>, double> neighbor(const std::vector<int>& tour, double cost) {
         std::uniform_real_distribution<double> prob_dist(0.0, 1.0);
         double p = prob_dist(rng);
-        
-        if (p < 0.3) {
-            return two_opt(tour);
-        } else if (p < 0.65) {
-            return three_opt(tour);
-        } else {
-            return or_opt(tour);
+        if(p < 0.5){
+            return or_opt(tour,cost);
         }
+      else{
+        return two_opt(tour,cost);
+      }
     }
-    
+    // 焼きなまし
     std::vector<int> solve_annealing(std::vector<int> tour, 
                                    double initial_temp = -1, 
-                                   double final_temp = 1e-8,
-                                   double alpha = 0.9999999,
-                                   long long max_iter = 1e9) {
+                                   double final_temp = 0.1,
+                                   double beta = 1e-6,
+                                   double epsilon = 0.01,
+                                   long long max_iter = 1e9,
+                                const std::string& realtime_filename="realtime_tour.csv") {
         std::vector<int> current_tour = tour;
-        std::vector<int> best_tour = tour;
         double current_cost = total_distance(current_tour);
-        double before_cost = current_cost;
-        double best_cost = current_cost;
+        std::vector<int> best_tour_so_far = current_tour; // これまでの最良ツアーを保持
+        double best_cost_so_far = current_cost;         // これまでの最良スコアを保持
         
         if (initial_temp < 0) {
             initial_temp = current_cost * 0.1;
@@ -288,51 +208,40 @@ private:
         
         double temp = initial_temp;
         long long iter = 0;
-        long long stagnation = 0;
         
         std::uniform_real_distribution<double> rand_dist(0.0, 1.0);
         
         while (final_temp < temp && iter < max_iter) {
-            std::vector<int> new_tour = neighbor(current_tour);
-            double new_cost = total_distance(new_tour);
+            auto [new_tour, new_cost] = neighbor(current_tour, current_cost);
             
             double delta = new_cost - current_cost;
             
             if (delta < 0 || std::exp(-delta / temp) > rand_dist(rng)) {
                 current_tour = new_tour;
                 current_cost = new_cost;
+
+                if (current_cost < best_cost_so_far) {
+                    best_cost_so_far = current_cost;
+                    best_tour_so_far = current_tour;
+                    //write_tour(best_tour_so_far, realtime_filename); 
+                }
             }
             
-            temp *= alpha;
-            
+            temp = initial_temp / (1 + beta * iter) - epsilon;
+
             if (iter % 10000000 == 0) {
+                double actual_cost = total_distance(current_tour);
                 std::cout << "iter = " << iter << std::endl;
                 std::cout << "temp = " << temp << std::endl;
                 std::cout << "score = " << current_cost << std::endl;
+                std::cout << "real_score = " << actual_cost << std::endl;
+
             }
-            
-            if (std::abs(before_cost - current_cost) < 0.01) {
-                stagnation++;
-                if (stagnation > 5000000) {
-                    temp = initial_temp * 0.1;
-                    std::cout << "Reset temp! temp=" << temp << std::endl;
-                    std::cout << "stagnated score=" << current_cost << std::endl;
-                    stagnation = 0;
-                    if (current_cost < best_cost) {
-                        best_cost = current_cost;
-                        best_tour = current_tour;
-                    }
-                }
-                before_cost = current_cost;
-            } else {
-                stagnation = 0;
-                before_cost = current_cost;
-            }
-            
+
             iter++;
         }
         
-        return best_tour;
+        return best_tour_so_far;
     }
     
 public:
@@ -382,17 +291,15 @@ public:
         return true;
     }
 
-
+// サンプルコードにあったwrite_tourのc++翻訳版
     void write_tour(const std::vector<int>& tour, const std::string& filename) {
     std::ofstream ofs(filename);
     if (!ofs) {
         std::cerr << "Error: Cannot open file " << filename << " for writing." << std::endl;
         return;
     }
-
     // 1行目にインデックス（0始まりにするなら tour[0]、1始まりにするなら tour[0] + 1）
     ofs << "index\n";
-
     // 2行目以降に都市番号を1行ずつ出力
     for (int city : tour) {
         ofs << city << "\n";  // 必要なら "+ 1" して1始まりに調整
@@ -401,8 +308,8 @@ public:
     ofs.close();
     }
     
-    void solve(const std::string& out_filename) {
-        std::vector<int> tour = solve_greedy_multi_start(2000);
+    void solve(const std::string& out_filename, const std::string& realtime_filename) {
+        std::vector<int> tour = solve_greedy_multi_start(100);
         std::cout << "greedy = " << total_distance(tour) << std::endl;
         
         double cost = total_distance(tour);
@@ -411,20 +318,17 @@ public:
         //tour = solve_annealing(tour, cost * 0.5, 1e-9, 0.999997);
 
         // N = 512, input_5.csv, N = 2048, input_6.csv parameters
-        tour = solve_annealing(tour, cost * 0.1, 1e-9, 0.9999999,1e10);
+        tour = solve_annealing(tour, -1, 0.1, 1e-6,1,1e9, realtime_filename);
         std::cout << "annealing = " << total_distance(tour) << std::endl;
+
+        write_tour(tour,out_filename);
         
-        tour = solve_opt2(tour);
-        std::cout << "opt2 = " << total_distance(tour) << std::endl;
-        
-        //tour = solve_opt3(tour, 100000);
-        //std::cout << "opt3 = " << total_distance(tour) << std::endl;
     }
 };
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <input_file.csv>" << std::endl;
+     if (argc < 3) {
+        std::cerr << "Usage: " << argv[0] << " <input_file.csv> <output_file.csv> <realtime_tour.csv>" << std::endl;
         return 1;
     }
     
@@ -433,7 +337,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    solver.solve(argv[2]);
+    solver.solve(argv[2],argv[3]);
     
     return 0;
 }
