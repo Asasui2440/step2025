@@ -28,7 +28,6 @@ It supports:
 `wikipedia_graph.py`: 
 - Find the shortest path with BFS
 - Calculate the page ranks
-- Try to find the longest path between stations '池袋' and '渋谷'.
 
 ### 📁 lec05: TSP challenge
 Traveling Salesperson Problem    
@@ -37,7 +36,11 @@ Traveling Salesperson Problem
 In lec06, we tried 8192 cities.  
 
 ### 📁 lec07: Malloc Challenge
+Create a my malloc
+<br>
+- `malloc.c`
+   A merge algorithm is used to combine adjacent free memory blocks, aiming to optimize both memory utilization and throughput.
 
-
-
+- `listbin.c` 
+ Free memory blocks are managed in segregated free lists (bins) by size, enabling faster memory allocation and deallocation.
 
