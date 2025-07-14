@@ -179,6 +179,7 @@ private:
     return std::make_pair(new_tour, cost + cost_gap);
     }
 
+    // 半々の確率でor_optかtwo_optか選択
     std::pair<std::vector<int>, double> neighbor(const std::vector<int>& tour, double cost) {
         std::uniform_real_distribution<double> prob_dist(0.0, 1.0);
         double p = prob_dist(rng);
@@ -189,6 +190,8 @@ private:
         return two_opt(tour,cost);
       }
     }
+
+
     // 焼きなまし
     std::vector<int> solve_annealing(std::vector<int> tour, 
                                    double initial_temp = -1, 
@@ -243,6 +246,8 @@ private:
         
         return best_tour_so_far;
     }
+   
+    
     
 public:
     TSPSolver() : rng(std::chrono::steady_clock::now().time_since_epoch().count()) {}
@@ -325,6 +330,8 @@ public:
         
     }
 };
+
+
 
 int main(int argc, char* argv[]) {
      if (argc < 3) {
