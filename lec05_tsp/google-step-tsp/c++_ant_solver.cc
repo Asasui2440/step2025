@@ -62,10 +62,10 @@ void write_tour(const vector<int>& tour, const string& filename) {
 
 vector<int> ant_colony_optimization(
     const vector<vector<double>>& dist_matrix,
-    int num_ants = 200,
-    int generations = 2000,
+    int num_ants = 400,
+    int generations = 1000,
     double alpha = 1.0,      // フェロモンの重み
-    double beta = 8.0,       // ヒューリスティック情報の重み
+    double beta = 5.0,       // ヒューリスティック情報の重み
     double rho = 0.8,        // フェロモン蒸発率
     double Q = 100.0         // フェロモン増加量
 ) {
@@ -75,7 +75,7 @@ vector<int> ant_colony_optimization(
     uniform_real_distribution<double> real_dist(0.0, 1.0);
 
     // フェロモン初期化
-    vector<vector<double>> pheromone(N, vector<double>(N, 1.0));
+    vector<vector<double>> pheromone(N, vector<double>(N, 10.0));
     vector<int> best_tour;
     double best_length = numeric_limits<double>::max();
 
