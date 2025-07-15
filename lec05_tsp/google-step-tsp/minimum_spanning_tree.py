@@ -77,5 +77,5 @@ if __name__ == "__main__":
     mst_edges = weighted_mst_prim(dist_matrix)
     tour = mst_edges_to_tour(mst_edges, len(cities))
 
-    print("unweighted_mst=", total_distance(tour, dist_matrix))
+    print("mst=", total_distance(tour, dist_matrix))
     write_tour(tour, sys.argv[2])
