@@ -32,6 +32,7 @@ It supports:
 ### 📁 lec05: TSP challenge
 Traveling Salesperson Problem    
 `solver_opt.py` : Solving the problem using nearest neighbor methods and simulated Annealing  
+`c++_solver.cc` : Translated it into c++ so that it can run many loops.
 <br>
 In lec06, we tried 8192 cities.  
 
